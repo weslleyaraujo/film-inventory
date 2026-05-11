@@ -1,4 +1,5 @@
 import { useEffect } from 'preact/hooks'
+import { useRegisterSW } from 'virtual:pwa-register/preact'
 import { Film, Camera, ClipboardList, Settings } from 'lucide-preact'
 import { InventoryScreen } from './screens/InventoryScreen'
 import { CameraListScreen } from './screens/CameraListScreen'
@@ -8,6 +9,7 @@ import { StockDetailScreen } from './screens/StockDetailScreen'
 import { CameraDetailScreen } from './screens/CameraDetailScreen'
 import { loading } from './store/inventory'
 import { activeTab } from './store/ui'
+import { UpdatePrompt } from './components/UpdatePrompt'
 import type { Tab } from './store/ui'
 
 const TABS: { id: Tab; label: string; icon: typeof Film }[] = [
@@ -18,6 +20,11 @@ const TABS: { id: Tab; label: string; icon: typeof Film }[] = [
 ]
 
 export function App() {
+  const {
+    needRefresh: [needRefresh],
+    updateServiceWorker,
+  } = useRegisterSW()
+
   useEffect(() => {
     // Handle deep links from PWA shortcuts
     const params = new URLSearchParams(window.location.search)
@@ -80,6 +87,11 @@ export function App() {
           )
         })}
       </nav>
+
+      <UpdatePrompt
+        needRefresh={needRefresh}
+        updateServiceWorker={updateServiceWorker}
+      />
     </div>
   )
 }

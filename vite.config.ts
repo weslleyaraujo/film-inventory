@@ -11,7 +11,7 @@ export default defineConfig({
     }),
     tailwindcss(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       includeAssets: ['icon-192.svg', 'icon-512.svg', 'apple-touch-icon.svg'],
       manifest: {
         name: 'Film Inventory',
