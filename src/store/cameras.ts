@@ -140,6 +140,7 @@ export async function finishRoll(
     finishedAt?: Date
     rating?: number
     notes?: string
+    twinCheckNumber?: string
     decrementInventory?: boolean
   }
 ): Promise<void> {
@@ -171,6 +172,7 @@ export async function finishRoll(
     frameCount: loaded.frameCount,
     rating: options.rating,
     notes: options.notes,
+    twinCheckNumber: options.twinCheckNumber,
     createdAt: new Date(),
   })
 

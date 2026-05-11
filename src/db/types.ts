@@ -70,6 +70,7 @@ export interface FinishedRoll {
   frameCount?: number
   rating?: number
   notes?: string
+  twinCheckNumber?: string
   createdAt: Date
 }
 

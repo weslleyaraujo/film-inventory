@@ -12,11 +12,13 @@ interface FinishRollModalProps {
 
 const pushStops = signal(0)
 const finishNotes = signal('')
+const twinCheck = signal('')
 const submitting = signal(false)
 
 function resetForm() {
   pushStops.value = 0
   finishNotes.value = ''
+  twinCheck.value = ''
   submitting.value = false
 }
 
@@ -39,6 +41,7 @@ export function FinishRollModal({ open, onClose, cameraId }: FinishRollModalProp
 
       await finishRoll(cameraId, {
         notes: notesParts.join(' | ') || undefined,
+        twinCheckNumber: twinCheck.value.trim() || undefined,
       })
       resetForm()
       onClose()
@@ -80,6 +83,14 @@ export function FinishRollModal({ open, onClose, cameraId }: FinishRollModalProp
               class="w-10 h-10 flex items-center justify-center rounded-xl border border-[var(--color-border)] text-[var(--text-secondary)] active:bg-[var(--bg-card)]">+</button>
             <span class="text-caption text-[var(--text-tertiary)]">{pushStops.value === 0 ? 'Box speed' : pushStops.value > 0 ? `Pushed +${pushStops.value}` : `Pulled ${Math.abs(pushStops.value)}`} </span>
           </div>
+        </div>
+
+        {/* Twin Check Number */}
+        <div class="flex flex-col gap-1.5">
+          <label class="text-caption text-[var(--text-secondary)]">Twin Check #</label>
+          <input type="text" value={twinCheck} onInput={(e) => (twinCheck.value = (e.target as HTMLInputElement).value)}
+            placeholder="e.g. 12345A"
+            class="w-full px-4 py-3 bg-[var(--bg-card)] border border-[var(--color-border)] rounded-xl text-body text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:border-[var(--color-accent)]" />
         </div>
 
         {/* Notes */}

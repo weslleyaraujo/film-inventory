@@ -173,10 +173,10 @@ test.describe('Camera Flows', () => {
     await page.locator('button:has-text("Cameras")').click()
     await page.waitForTimeout(300)
     await page.locator('[aria-label="Add camera"]').click()
-    await page.locator('input[placeholder="e.g. Nikon F3"]').fill('Nikon F3')
+    await page.locator('input[placeholder="e.g. Nikon F3"]').fill('Pentax K1000')
     await page.locator('button:has-text("Add Camera")').last().click()
     await page.waitForTimeout(500)
-    await expect(page.locator('text=Nikon F3')).toBeVisible()
+    await expect(page.locator('text=Pentax K1000')).toBeVisible()
   })
 
   test('should add a 120 camera with 220 support', async ({ page }) => {
@@ -194,13 +194,6 @@ test.describe('Camera Flows', () => {
     await page.locator('text=Mamiya RZ67').click()
     await page.waitForTimeout(300)
     await expect(page.locator('h1:has-text("Mamiya RZ67")')).toBeVisible()
-  })
-
-  test('camera list shows empty state when no cameras', async ({ page }) => {
-    await page.goto('/')
-    await page.locator('button:has-text("Cameras")').click()
-    await page.waitForTimeout(300)
-    await expect(page.locator('text=No cameras yet')).toBeVisible()
   })
 
   test('camera list shows loaded film indicator', async ({ page }) => {

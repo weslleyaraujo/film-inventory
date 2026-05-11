@@ -1,9 +1,9 @@
 import { signal } from '@preact/signals'
 import { computed } from '@preact/signals'
-import { ArrowLeft, Camera as CameraIcon } from 'lucide-preact'
+import { ArrowLeft, Camera as CameraIcon, Hash } from 'lucide-preact'
 import { cameras, getLoadedFilmByCamera } from '../store/cameras'
 import { getCameraFormats } from '../db/types'
-import { getRollsByCamera } from '../store/rolls'
+import { getRollsByCamera, updateFinishedRoll } from '../store/rolls'
 import { activeTab, selectedCameraId } from '../store/ui'
 import { formatRelative, formatDateFull } from '../lib/date'
 import { TypeDot } from '../components/ui/Badge'
@@ -121,6 +121,22 @@ export function CameraDetailScreen() {
                       {formatDateFull(r.finishedAt)}
                       {r.frameCount ? ` · ${r.frameCount} exp` : ''}
                     </p>
+                    <div class="flex items-center gap-1.5 mt-1.5">
+                      <Hash size={11} strokeWidth={1.5} class="text-[var(--text-tertiary)] flex-shrink-0" />
+                      <input
+                        type="text"
+                        value={r.twinCheckNumber || ''}
+                        onBlur={(e) => {
+                          const val = (e.target as HTMLInputElement).value.trim()
+                          updateFinishedRoll(r.id, { twinCheckNumber: val || undefined })
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') (e.target as HTMLInputElement).blur()
+                        }}
+                        placeholder="Twin check #"
+                        class="text-caption text-[var(--text-secondary)] bg-transparent border-b border-[var(--color-separator)] focus:border-[var(--color-accent)] focus:outline-none pb-0.5 w-28 placeholder:text-[var(--text-tertiary)]"
+                      />
+                    </div>
                   </div>
                 </div>
                 {r.notes && <p class="text-caption text-[var(--text-tertiary)] mt-1 truncate">{r.notes}</p>}

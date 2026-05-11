@@ -1,6 +1,6 @@
 import { computed, signal } from '@preact/signals'
 import { AnimatedNumber } from '../components/ui/AnimatedNumber'
-import { ArrowLeft, Camera, ClipboardList, ThermometerSnowflake, ArrowUpRight, Pencil, Plus, Trash2 } from 'lucide-preact'
+import { ArrowLeft, Camera, ClipboardList, ThermometerSnowflake, ArrowUpRight, Pencil, Plus, Trash2, Hash } from 'lucide-preact'
 import { stocks, updateStock, deleteStock } from '../store/stocks'
 import { getVariantsByStock, addVariant, updateVariant, deleteVariant } from '../store/variants'
 import {
@@ -11,7 +11,7 @@ import {
   moveInventory,
 } from '../store/inventory'
 import { loadedFilmsWithDetails } from '../store/cameras'
-import { finishedRollsWithDetails } from '../store/rolls'
+import { finishedRollsWithDetails, updateFinishedRoll } from '../store/rolls'
 import { activeTab, activeStockId } from '../store/ui'
 import { TypeDot } from '../components/ui/Badge'
 import { ISOBar } from '../components/ui/ISOBar'
@@ -328,7 +328,16 @@ export function StockDetailScreen() {
                       </button>
                     </>
                   ) : (
-                    <span class="text-caption text-[var(--text-tertiary)]">—</span>
+                    <button
+                      onClick={async () => {
+                        await addInventoryItem({ variantId: v.id, quantity: 1, location: 'with-me' })
+                        if (typeof navigator !== 'undefined' && 'vibrate' in navigator) navigator.vibrate(10)
+                      }}
+                      class="p-1 rounded-lg text-caption text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] transition-colors"
+                      aria-label="Add with-me"
+                    >
+                      <Plus size={14} strokeWidth={1.5} />
+                    </button>
                   )}
                 </div>
 
@@ -369,7 +378,16 @@ export function StockDetailScreen() {
                       </button>
                     </>
                   ) : (
-                    <span class="text-caption text-[var(--text-tertiary)]">—</span>
+                    <button
+                      onClick={async () => {
+                        await addInventoryItem({ variantId: v.id, quantity: 1, location: 'fridge' })
+                        if (typeof navigator !== 'undefined' && 'vibrate' in navigator) navigator.vibrate(10)
+                      }}
+                      class="p-1 rounded-lg text-caption text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] transition-colors"
+                      aria-label="Add stored"
+                    >
+                      <Plus size={14} strokeWidth={1.5} />
+                    </button>
                   )}
                 </div>
               </div>
@@ -414,6 +432,22 @@ export function StockDetailScreen() {
                       {formatDateFull(r.finishedAt)}
                       {r.frameCount ? ` · ${r.frameCount} exp` : ''}
                     </p>
+                    <div class="flex items-center gap-1.5 mt-1.5">
+                      <Hash size={11} strokeWidth={1.5} class="text-[var(--text-tertiary)] flex-shrink-0" />
+                      <input
+                        type="text"
+                        value={r.twinCheckNumber || ''}
+                        onBlur={(e) => {
+                          const val = (e.target as HTMLInputElement).value.trim()
+                          updateFinishedRoll(r.id, { twinCheckNumber: val || undefined })
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') (e.target as HTMLInputElement).blur()
+                        }}
+                        placeholder="Twin check #"
+                        class="text-caption text-[var(--text-secondary)] bg-transparent border-b border-[var(--color-separator)] focus:border-[var(--color-accent)] focus:outline-none pb-0.5 w-28 placeholder:text-[var(--text-tertiary)]"
+                      />
+                    </div>
                   </div>
                 </div>
                 {r.notes && <p class="text-caption text-[var(--text-tertiary)] mt-1">{r.notes}</p>}

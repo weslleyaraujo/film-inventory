@@ -1,5 +1,5 @@
-import { ClipboardList } from 'lucide-preact'
-import { finishedRollsWithDetails, totalFinishedRolls, mostShotStock, mostUsedCamera } from '../store/rolls'
+import { ClipboardList, Trash2, Hash } from 'lucide-preact'
+import { finishedRollsWithDetails, totalFinishedRolls, mostShotStock, mostUsedCamera, deleteFinishedRoll, updateFinishedRoll } from '../store/rolls'
 import { TypeDot } from '../components/ui/Badge'
 import { EmptyState } from '../components/ui/EmptyState'
 import { formatDate, formatMonth } from '../lib/date'
@@ -78,20 +78,51 @@ export function LogScreen() {
                     <div class="flex flex-col gap-2">
                       {months.get(month)!.map((roll) => (
                         <div key={roll.id} class="bg-[var(--bg-card)] rounded-2xl p-4 border border-[var(--color-border)]">
-                          <div class="flex items-center gap-2 mb-1">
-                            <TypeDot type={roll.variant.stock.type} />
-                            <p class="text-body font-semibold truncate">{roll.variant.name}</p>
+                          <div class="flex items-start justify-between gap-2">
+                            <div class="flex-1 min-w-0">
+                              <div class="flex items-center gap-2 mb-1">
+                                <TypeDot type={roll.variant.stock.type} />
+                                <p class="text-body font-semibold truncate">{roll.variant.name}</p>
+                              </div>
+                              <p class="text-caption text-[var(--text-secondary)]">
+                                {roll.camera.name} · {roll.variant.format}
+                                {roll.frameCount ? ` · ${roll.frameCount} exp` : ''}
+                              </p>
+                              <div class="flex items-center gap-1.5 mt-1.5">
+                                <Hash size={12} strokeWidth={1.5} class="text-[var(--text-tertiary)] flex-shrink-0" />
+                                <input
+                                  type="text"
+                                  value={roll.twinCheckNumber || ''}
+                                  onBlur={(e) => {
+                                    const val = (e.target as HTMLInputElement).value.trim()
+                                    updateFinishedRoll(roll.id, { twinCheckNumber: val || undefined })
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') (e.target as HTMLInputElement).blur()
+                                  }}
+                                  placeholder="Twin check #"
+                                  class="text-caption text-[var(--text-secondary)] bg-transparent border-b border-[var(--color-separator)] focus:border-[var(--color-accent)] focus:outline-none pb-0.5 w-28 placeholder:text-[var(--text-tertiary)]"
+                                />
+                              </div>
+                              {roll.notes && (
+                                <p class="text-caption text-[var(--text-tertiary)] mt-1.5 leading-relaxed">{roll.notes}</p>
+                              )}
+                              <p class="text-caption text-[var(--text-tertiary)] mt-1.5">
+                                {formatDate(roll.finishedAt)}
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => {
+                                if (confirm('Delete this finished roll from history?')) {
+                                  deleteFinishedRoll(roll.id)
+                                }
+                              }}
+                              class="p-1.5 -mr-1 -mt-1 rounded-lg text-[var(--text-tertiary)] hover:text-[var(--color-destructive)] hover:bg-[var(--color-destructive)]/10 transition-colors flex-shrink-0"
+                              aria-label="Delete roll"
+                            >
+                              <Trash2 size={16} strokeWidth={1.5} />
+                            </button>
                           </div>
-                          <p class="text-caption text-[var(--text-secondary)]">
-                            {roll.camera.name} · {roll.variant.format}
-                            {roll.frameCount ? ` · ${roll.frameCount} exp` : ''}
-                          </p>
-                          {roll.notes && (
-                            <p class="text-caption text-[var(--text-tertiary)] mt-1.5 leading-relaxed">{roll.notes}</p>
-                          )}
-                          <p class="text-caption text-[var(--text-tertiary)] mt-1.5">
-                            {formatDate(roll.finishedAt)}
-                          </p>
                         </div>
                       ))}
                     </div>

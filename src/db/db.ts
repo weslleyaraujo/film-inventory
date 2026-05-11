@@ -19,7 +19,7 @@ export class FilmInventoryDB extends Dexie {
   constructor() {
     super('FilmInventory')
 
-    this.version(2).stores({
+    this.version(3).stores({
       filmStocks: 'id, brand, type, iso',
       filmVariants: 'id, stockId, format',
       inventoryItems: 'id, variantId, location',
