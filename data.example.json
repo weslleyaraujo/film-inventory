@@ -1,0 +1,130 @@
+{
+  "version": 1,
+  "exportedAt": "2025-01-01T00:00:00.000Z",
+  "filmStocks": [
+    {
+      "id": "s1",
+      "name": "Portra 400",
+      "brand": "Kodak",
+      "type": "color-negative",
+      "iso": 400,
+      "createdAt": "2024-12-01T00:00:00.000Z"
+    },
+    {
+      "id": "s2",
+      "name": "HP5 Plus",
+      "brand": "Ilford",
+      "type": "bw",
+      "iso": 400,
+      "createdAt": "2024-12-01T00:00:00.000Z"
+    },
+    {
+      "id": "s3",
+      "name": "Ektachrome E100",
+      "brand": "Kodak",
+      "type": "color-positive",
+      "iso": 100,
+      "createdAt": "2024-12-01T00:00:00.000Z"
+    }
+  ],
+  "filmVariants": [
+    {
+      "id": "v1",
+      "stockId": "s1",
+      "name": "Portra 400",
+      "format": "35mm",
+      "dxCoded": true,
+      "createdAt": "2024-12-01T00:00:00.000Z"
+    },
+    {
+      "id": "v2",
+      "stockId": "s1",
+      "name": "Portra 400",
+      "format": "120",
+      "dxCoded": false,
+      "createdAt": "2024-12-01T00:00:00.000Z"
+    },
+    {
+      "id": "v3",
+      "stockId": "s2",
+      "name": "HP5 Plus",
+      "format": "35mm",
+      "dxCoded": true,
+      "createdAt": "2024-12-01T00:00:00.000Z"
+    },
+    {
+      "id": "v4",
+      "stockId": "s3",
+      "name": "Ektachrome E100",
+      "format": "120",
+      "dxCoded": false,
+      "createdAt": "2024-12-01T00:00:00.000Z"
+    }
+  ],
+  "inventoryItems": [
+    {
+      "id": "i1",
+      "variantId": "v1",
+      "quantity": 5,
+      "location": "fridge",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "i2",
+      "variantId": "v2",
+      "quantity": 3,
+      "location": "with-me",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "i3",
+      "variantId": "v3",
+      "quantity": 2,
+      "location": "fridge",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "i4",
+      "variantId": "v4",
+      "quantity": 1,
+      "location": "with-me",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    }
+  ],
+  "cameras": [
+    {
+      "id": "c1",
+      "name": "Nikon F3",
+      "config": { "type": "35mm" },
+      "createdAt": "2024-12-01T00:00:00.000Z"
+    },
+    {
+      "id": "c2",
+      "name": "Mamiya RB67",
+      "config": { "type": "120" },
+      "createdAt": "2024-12-01T00:00:00.000Z"
+    }
+  ],
+  "loadedFilms": [
+    {
+      "id": "l1",
+      "cameraId": "c1",
+      "variantId": "v1",
+      "loadedAt": "2025-01-01T00:00:00.000Z",
+      "frameCount": 36,
+      "notes": "First roll of the year"
+    }
+  ],
+  "finishedRolls": [
+    {
+      "id": "r1",
+      "variantId": "v3",
+      "cameraId": "c1",
+      "loadedAt": "2024-12-15T00:00:00.000Z",
+      "finishedAt": "2024-12-28T00:00:00.000Z",
+      "frameCount": 36,
+      "notes": "Pushed +1 stop",
+      "createdAt": "2024-12-28T00:00:00.000Z"
+    }
+  ]
+}
