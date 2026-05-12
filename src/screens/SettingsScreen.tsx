@@ -1,9 +1,12 @@
 import { signal } from '@preact/signals'
-import { Sun, Moon, Monitor, Download, Upload, Trash2 } from 'lucide-preact'
-import { themeMode, setThemeMode } from '../store/ui'
+import { Sun, Moon, Monitor, Download, Upload, Trash2, Vibrate, VibrateOff } from 'lucide-preact'
+import { themeMode, setThemeMode, hapticsEnabled, setHapticsEnabled } from '../store/ui'
 import type { ThemeMode } from '../store/ui'
 import { exportDatabase, downloadJSON } from '../db/export'
 import { validateExportData, importDatabase } from '../db/import'
+import { lightTap, confirmTap } from '../lib/haptics'
+
+const hapticsSupported = typeof navigator !== 'undefined' && 'vibrate' in navigator
 
 const message = signal<string | null>(null)
 const error = signal<string | null>(null)
@@ -30,6 +33,7 @@ export function SettingsScreen() {
       const data = await exportDatabase()
       downloadJSON(data)
       showMessage('Database exported successfully')
+      confirmTap()
     } catch (err) {
       showError('Failed to export database')
     }
@@ -52,6 +56,7 @@ export function SettingsScreen() {
         if (!confirm('This will replace all existing data. Continue?')) return
         await importDatabase(data)
         showMessage('Database imported successfully')
+        confirmTap()
       } catch (err) {
         showError('Failed to import file')
       }
@@ -74,6 +79,7 @@ export function SettingsScreen() {
         finishedRolls: [],
       })
       showMessage('All data cleared')
+      confirmTap()
     } catch (err) {
       showError('Failed to clear data')
     }
@@ -102,7 +108,7 @@ export function SettingsScreen() {
         {/* Theme */}
         <div class="bg-[var(--bg-card)] rounded-2xl p-4 border border-[var(--color-border)]">
           <p class="text-section-title mb-3">Appearance</p>
-          <div class="flex gap-2">
+          <div class={`flex gap-2 ${hapticsSupported ? 'mb-4' : ''}`}>
             {themeOptions.map(({ mode, label, icon: Icon }) => (
               <button
                 key={mode}
@@ -118,6 +124,24 @@ export function SettingsScreen() {
               </button>
             ))}
           </div>
+          {hapticsSupported && (
+            <div class="border-t border-[var(--color-separator)] pt-3">
+              <button
+                onClick={() => { lightTap(); setHapticsEnabled(!hapticsEnabled.value) }}
+                class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-[var(--bg-app)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors border border-[var(--color-border)]"
+              >
+                {hapticsEnabled.value ? (
+                  <Vibrate size={18} strokeWidth={1.5} />
+                ) : (
+                  <VibrateOff size={18} strokeWidth={1.5} />
+                )}
+                <span class="text-body flex-1 text-left">Haptic Feedback</span>
+                <span class={`text-caption ${hapticsEnabled.value ? 'text-[var(--color-accent)]' : 'text-[var(--text-tertiary)]'}`}>
+                  {hapticsEnabled.value ? 'On' : 'Off'}
+                </span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Data */}

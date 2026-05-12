@@ -20,6 +20,7 @@ import { Stepper } from '../components/ui/Stepper'
 import { SegmentedControl } from '../components/ui/SegmentedControl'
 import type { FilmStock, FilmType, FilmFormat, Location } from '../db/types'
 import { formatRelative, formatDateFull } from '../lib/date'
+import { lightTap, confirmTap } from '../lib/haptics'
 
 // ── Sheet signals ──
 const showEditStock = signal(false)
@@ -215,10 +216,11 @@ export function StockDetailScreen() {
               const to = from === 'with-me' ? 'fridge' as const : 'with-me' as const
               if (!fromItem) return
               await moveInventory(fromItem.id, to, qty)
-              if (typeof navigator !== 'undefined' && 'vibrate' in navigator) navigator.vibrate(10)
+              lightTap()
             }
 
             const handleStore = () => {
+              lightTap()
               if (carried === 1) {
                 doMove('with-me', 1)
               } else {
@@ -235,6 +237,7 @@ export function StockDetailScreen() {
             }
 
             const handleTakeOut = () => {
+              lightTap()
               if (stored === 1) {
                 doMove('fridge', 1)
               } else {
@@ -314,7 +317,8 @@ export function StockDetailScreen() {
                               await decrementQuantity(carriedItem.id)
                             }
                           }
-                          if (typeof navigator !== 'undefined' && 'vibrate' in navigator) navigator.vibrate(val > carried ? 10 : val === 0 ? [10, 50, 10] : 10)
+                          if (val === 0 && val < carried) confirmTap()
+                          else lightTap()
                         }}
                       />
                       <button
@@ -331,7 +335,7 @@ export function StockDetailScreen() {
                     <button
                       onClick={async () => {
                         await addInventoryItem({ variantId: v.id, quantity: 1, location: 'with-me' })
-                        if (typeof navigator !== 'undefined' && 'vibrate' in navigator) navigator.vibrate(10)
+                        lightTap()
                       }}
                       class="p-1 rounded-lg text-caption text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] transition-colors"
                       aria-label="Add with-me"
@@ -364,7 +368,8 @@ export function StockDetailScreen() {
                               await decrementQuantity(storedItem.id)
                             }
                           }
-                          if (typeof navigator !== 'undefined' && 'vibrate' in navigator) navigator.vibrate(val > stored ? 10 : val === 0 ? [10, 50, 10] : 10)
+                          if (val === 0 && val < stored) confirmTap()
+                          else lightTap()
                         }}
                       />
                       <button
@@ -381,7 +386,7 @@ export function StockDetailScreen() {
                     <button
                       onClick={async () => {
                         await addInventoryItem({ variantId: v.id, quantity: 1, location: 'fridge' })
-                        if (typeof navigator !== 'undefined' && 'vibrate' in navigator) navigator.vibrate(10)
+                        lightTap()
                       }}
                       class="p-1 rounded-lg text-caption text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] transition-colors"
                       aria-label="Add stored"
@@ -499,6 +504,7 @@ export function StockDetailScreen() {
                   savingStockDetail.value = true
                   try {
                     await updateStock(s.id, { name: editStockForm.name.value.trim(), brand: editStockForm.brand.value.trim(), type: editStockForm.type.value, iso: editStockForm.iso.value, notes: editStockForm.notes.value.trim() || undefined })
+                    confirmTap()
                     showEditStock.value = false
                   } catch (err) { console.error(err) }
                   finally { savingStockDetail.value = false }
@@ -510,7 +516,7 @@ export function StockDetailScreen() {
               </button>
               <button
                 onClick={async () => {
-                  try { await deleteStock(s.id); showEditStock.value = false; activeTab.value = 'inventory' }
+                  try { confirmTap(); await deleteStock(s.id); showEditStock.value = false; activeTab.value = 'inventory' }
                   catch (err: any) { alert(err.message) }
                 }}
                 class="px-5 py-3 rounded-xl bg-[var(--color-destructive)]/10 text-[var(--color-destructive)] text-body font-semibold"
@@ -589,6 +595,7 @@ export function StockDetailScreen() {
                     quantity: newVariantQty.value,
                     location: newVariantLocation.value,
                   })
+                  confirmTap()
                   showAddVariant.value = false
                 } catch (err) { console.error(err) }
                 finally { addingVariant.value = false }
@@ -642,6 +649,7 @@ export function StockDetailScreen() {
                   savingDetailVariant.value = true
                   try {
                     await updateVariant(editingVariantDetailId.value!, { name: editDetailVariantName.value.trim(), dxCoded: editDetailVariantDxCoded.value, notes: editDetailVariantNotes.value.trim() || undefined })
+                    confirmTap()
                     editingVariantDetailId.value = null
                   } catch (err) { console.error(err) }
                   finally { savingDetailVariant.value = false }
@@ -654,6 +662,7 @@ export function StockDetailScreen() {
               <button
                 onClick={async () => {
                   if (!confirm('Delete this variant? This removes all inventory for it.')) return
+                  confirmTap()
                   await deleteVariant(editingVariantDetailId.value!)
                   editingVariantDetailId.value = null
                 }}
@@ -703,7 +712,7 @@ export function StockDetailScreen() {
                 const sourceItem = items.find(i => i.location === m.from)
                 if (!sourceItem) return
                 await moveInventory(sourceItem.id, m.to, moveDetailQty.value)
-                if (typeof navigator !== 'undefined' && 'vibrate' in navigator) navigator.vibrate(10)
+                lightTap()
                 moveFromDetail.value = null
               }}
               class="w-full px-5 py-3 rounded-xl bg-[var(--color-accent)] text-white text-body font-semibold"

@@ -6,6 +6,7 @@ import { TypeDot } from '../ui/Badge'
 import { inventoryWithDetails } from '../../store/inventory'
 import { loadFilm } from '../../store/cameras'
 import type { FilmFormat } from '../../db/types'
+import { confirmTap } from '../../lib/haptics'
 
 interface LoadFilmModalProps {
   open: boolean
@@ -60,6 +61,7 @@ export function LoadFilmModal({
         notes: loadNotes.value.trim() || undefined,
         decrementInventory: decrement.value,
       })
+      confirmTap()
       resetForm()
       onClose()
     } catch (err) {

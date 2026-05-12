@@ -135,3 +135,12 @@ export function setFilter(patch: Partial<FilterState>): void {
 export function clearFilters(): void {
   filterState.value = { ...defaultFilter }
 }
+
+// ── Haptics ──
+
+export const hapticsEnabled = signal<boolean>(loadPref('hapticsEnabled', true))
+
+export function setHapticsEnabled(enabled: boolean): void {
+  hapticsEnabled.value = enabled
+  savePref('hapticsEnabled', enabled)
+}

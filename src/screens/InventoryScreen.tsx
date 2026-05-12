@@ -67,6 +67,12 @@ interface VariantGroup {
 export function InventoryScreen() {
   // Group filtered inventory by stock, then by variant within each stock
   const grouped = computed(() => {
+    // Pre-compute true totals from the unfiltered full inventory
+    const trueTotal = new Map<string, number>()
+    for (const item of inventoryWithDetails.value) {
+      trueTotal.set(item.variant.id, (trueTotal.get(item.variant.id) ?? 0) + item.quantity)
+    }
+
     const stockMap = new Map<string, {
       stock: (typeof stocks.value)[number]
       variantMap: Map<string, { name: string; format: FilmFormat; carried: number; fridge: number }>
@@ -106,7 +112,7 @@ export function InventoryScreen() {
           stockName: entry.stock.name,
           stockBrand: entry.stock.brand,
           stockType: entry.stock.type,
-          total: v.carried + v.fridge,
+          total: trueTotal.get(vid) ?? 0,
           carried: v.carried,
         })
       }

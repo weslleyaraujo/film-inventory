@@ -8,6 +8,7 @@ import { addVariant } from '../../store/variants'
 import { addInventoryItem } from '../../store/inventory'
 import { stocks } from '../../store/stocks'
 import type { FilmType, FilmFormat, Location } from '../../db/types'
+import { confirmTap } from '../../lib/haptics'
 
 interface AddFilmSheetProps {
   open: boolean
@@ -103,6 +104,7 @@ export function AddFilmSheet({ open, onClose }: AddFilmSheetProps) {
 
       })
 
+      confirmTap()
       resetForm()
       onClose()
     } catch (err) {

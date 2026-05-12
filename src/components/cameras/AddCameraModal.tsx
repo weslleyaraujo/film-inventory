@@ -4,6 +4,7 @@ import { Button } from '../ui/Button'
 import { SegmentedControl } from '../ui/SegmentedControl'
 import { addCamera } from '../../store/cameras'
 import type { CameraConfig } from '../../db/types'
+import { confirmTap } from '../../lib/haptics'
 
 interface AddCameraModalProps {
   open: boolean
@@ -44,6 +45,7 @@ export function AddCameraModal({ open, onClose }: AddCameraModalProps) {
         config,
         notes: notes.value.trim() || undefined,
       })
+      confirmTap()
       resetForm()
       onClose()
     } catch (err) {

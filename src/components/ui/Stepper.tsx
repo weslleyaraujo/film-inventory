@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'preact/hooks'
 import { Minus, Plus } from 'lucide-preact'
+import { lightTap } from '../../lib/haptics'
 
 interface StepperProps {
   value: number
@@ -30,9 +31,7 @@ export function Stepper({ value, onChange, min = 0, max = 999 }: StepperProps) {
     setPulse(true)
     onChange(newVal)
     setTimeout(() => setPulse(false), 150)
-    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
-      navigator.vibrate(10)
-    }
+    lightTap()
   }
 
   const commitEdit = () => {
@@ -41,9 +40,7 @@ export function Stepper({ value, onChange, min = 0, max = 999 }: StepperProps) {
       const clamped = Math.max(min, Math.min(max, parsed))
       if (clamped !== value) {
         onChange(clamped)
-        if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
-          navigator.vibrate(10)
-        }
+        lightTap()
       }
     }
     setEditing(false)
