@@ -206,12 +206,17 @@
 
 /* ── Scrollbar ──────────────────────────────────────────────── */
 
+/* Hide all scrollbars globally for native feel */
 ::-webkit-scrollbar {
-  width: 0;
-  height: 0;
+  display: none;
 }
 
-/* Hide scrollbar but allow scroll */
+html, body, * {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* Hide scrollbar but allow scroll (utility class) */
 .scrollbar-none {
   -ms-overflow-style: none;
   scrollbar-width: none;

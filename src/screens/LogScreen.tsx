@@ -53,7 +53,7 @@ export function LogScreen() {
         </section>
       )}
 
-      <section class="px-5 pb-24 flex flex-col gap-6">
+      <section class="px-5 pb-4 flex flex-col gap-6">
         {rolls.length === 0 ? (
           <EmptyState icon={<ClipboardList size={56} strokeWidth={1} />}
             title="No rolls finished yet" description="Finish a roll from the Cameras tab" />

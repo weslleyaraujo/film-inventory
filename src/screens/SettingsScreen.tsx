@@ -98,7 +98,7 @@ export function SettingsScreen() {
         </div>
       )}
 
-      <section class="px-5 pb-24 flex flex-col gap-6">
+      <section class="px-5 pb-4 flex flex-col gap-6">
         {/* Theme */}
         <div class="bg-[var(--bg-card)] rounded-2xl p-4 border border-[var(--color-border)]">
           <p class="text-section-title mb-3">Appearance</p>

@@ -223,7 +223,7 @@ export function InventoryScreen() {
       </div>
 
       {/* Film list */}
-      <section class="px-5 pb-24 flex flex-col">
+      <section class="px-5 pb-4 flex flex-col">
         {grouped.value.length === 0 ? (
           hasAnyInventory.value ? (
             <FilteredEmptyState />

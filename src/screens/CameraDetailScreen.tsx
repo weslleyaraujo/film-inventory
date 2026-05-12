@@ -36,7 +36,7 @@ export function CameraDetailScreen() {
   const cam = camera.value
 
   return (
-    <div class="flex flex-col min-h-full pb-24">
+    <div class="flex flex-col min-h-full pb-4">
       {/* Header */}
       <header class="flex items-center gap-3 px-5 pt-[calc(16px+var(--safe-top))] pb-4">
         <button

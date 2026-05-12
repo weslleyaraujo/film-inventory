@@ -16,7 +16,7 @@ export function CameraListScreen() {
         <h1 class="text-screen-title">Cameras</h1>
       </header>
 
-      <section class="px-5 pb-24">
+      <section class="px-5 pb-4">
         {cameras.value.length === 0 ? (
           <EmptyState
             icon={<CameraIcon size={56} strokeWidth={1} />}
