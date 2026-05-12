@@ -12,7 +12,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'prompt',
-      includeAssets: ['icon-192.svg', 'icon-512.svg', 'apple-touch-icon.svg'],
+      includeAssets: ['icon-192.svg', 'icon-512.svg', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'],
       manifest: {
         name: 'Film Inventory',
         short_name: 'Films',
@@ -25,19 +25,19 @@ export default defineConfig({
         start_url: '/film-inventory/',
         icons: [
           {
-            src: 'icon-192.svg',
+            src: 'icon-192.png',
             sizes: '192x192',
-            type: 'image/svg+xml',
+            type: 'image/png',
           },
           {
-            src: 'icon-512.svg',
+            src: 'icon-512.png',
             sizes: '512x512',
-            type: 'image/svg+xml',
+            type: 'image/png',
           },
           {
-            src: 'icon-512.svg',
+            src: 'icon-512.png',
             sizes: '512x512',
-            type: 'image/svg+xml',
+            type: 'image/png',
             purpose: 'maskable',
           },
         ],
@@ -47,14 +47,14 @@ export default defineConfig({
             short_name: 'Add',
             description: 'Add film to inventory',
             url: '/film-inventory/?action=add',
-            icons: [{ src: 'icon-192.svg', sizes: '96x96' }],
+            icons: [{ src: 'icon-192.png', sizes: '96x96' }],
           },
           {
             name: 'View Fridge',
             short_name: 'Fridge',
             description: 'View films in fridge',
             url: '/film-inventory/?filter=fridge',
-            icons: [{ src: 'icon-192.svg', sizes: '96x96' }],
+            icons: [{ src: 'icon-192.png', sizes: '96x96' }],
           },
         ],
       },

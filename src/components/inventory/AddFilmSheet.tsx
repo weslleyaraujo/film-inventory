@@ -28,7 +28,7 @@ const FORMATS: { value: FilmFormat; label: string }[] = [
 
 const LOCATIONS: { value: Location; label: string }[] = [
   { value: 'with-me', label: 'With me' },
-  { value: 'fridge', label: 'Fridge' },
+  { value: 'fridge', label: 'Stored' },
 ]
 
 // Form state signals
@@ -211,7 +211,7 @@ export function AddFilmSheet({ open, onClose }: AddFilmSheetProps) {
 
         {/* Format + DX Coded row */}
         <div class="flex items-end gap-4">
-          <div class="flex flex-col gap-1.5 flex-1">
+          <div class="flex flex-col gap-1.5 items-start">
             <label class="text-caption text-[var(--text-secondary)]">Format</label>
             <SegmentedControl options={FORMATS} value={format.value} onChange={(v) => (format.value = v)} />
           </div>

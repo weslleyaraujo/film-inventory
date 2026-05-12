@@ -47,6 +47,7 @@ export function Modal({ open, onClose, title, children, variant = 'sheet' }: Mod
             class={`bg-[var(--bg-elevated)] w-full sm:max-w-md sm:rounded-[var(--radius-modal)]
               ${isSheet ? 'rounded-t-[var(--radius-modal)] max-h-[90vh] overflow-y-auto' : 'rounded-[var(--radius-modal)] mx-4'}
               shadow-[var(--shadow-modal)]`}
+            style={isSheet ? { paddingBottom: 'calc(24px + env(safe-area-inset-bottom))' } : undefined}
           >
             {title && (
               <div class="flex items-center justify-between px-5 pt-5 pb-2">

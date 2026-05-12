@@ -317,7 +317,7 @@ function StockGroupCard({ stock, variants }: { stock: (typeof stocks.value)[numb
               class="flex-1 flex items-center gap-3 px-4 py-3 text-left min-w-0">
               <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style={`background: ${typeDotColor}`} />
               <div class="flex-1 min-w-0" onClick={(e) => { e.stopPropagation(); activeStockId.value = stock.id; activeTab.value = 'stock-detail' }}>
-                <p class="text-section-title truncate hover:underline">{stock.name}</p>
+                <p class="text-body truncate hover:underline">{stock.name}</p>
                 <p class="text-caption text-[var(--text-secondary)]">ISO {stock.iso}</p>
               </div>
               <span class="text-mono flex items-center gap-0.5 flex-shrink-0">

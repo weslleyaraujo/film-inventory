@@ -15,7 +15,7 @@ export function SegmentedControl<T extends string>({
   onChange,
 }: SegmentedControlProps<T>) {
   return (
-    <div class="inline-flex bg-[var(--bg-card)] rounded-xl p-1 border border-[var(--color-border)]">
+    <div class="inline-flex self-start bg-[var(--bg-card)] rounded-xl p-1 border border-[var(--color-border)]">
       {options.map((opt) => (
         <button
           key={opt.value}
