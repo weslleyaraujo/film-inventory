@@ -52,7 +52,10 @@ export function App() {
   return (
     <div class="flex flex-col h-dvh bg-[var(--bg-app)]">
       {/* Main content area */}
-      <main class="flex-1 overflow-y-auto">
+      <main
+        class="flex-1 overflow-y-auto"
+        style="padding-top: env(safe-area-inset-top, 0px)"
+      >
         {activeTab.value === 'inventory' && <InventoryScreen />}
         {activeTab.value === 'cameras' && <CameraListScreen />}
         {activeTab.value === 'log' && <LogScreen />}
@@ -63,7 +66,7 @@ export function App() {
 
       {/* Bottom tab bar */}
       <nav
-        class="flex items-center justify-around px-2 pb-[calc(4px+var(--safe-bottom))] pt-1
+        class="flex items-center justify-around px-2 pt-1
                bg-[var(--bg-app)] border-t border-[var(--color-separator)]"
         style="padding-bottom: calc(4px + env(safe-area-inset-bottom, 0px))"
       >
