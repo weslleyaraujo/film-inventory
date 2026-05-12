@@ -19,7 +19,7 @@ export function UpdatePrompt({ needRefresh, updateServiceWorker }: UpdatePromptP
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 80, opacity: 0 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          class="fixed bottom-[calc(64px+var(--safe-bottom))] left-4 right-4 z-50
+          class="fixed bottom-16 left-4 right-4 z-50
                  flex items-center justify-between gap-3 px-4 py-3
                  bg-[var(--bg-elevated)] border border-[var(--color-border)]
                  rounded-[var(--radius-card)] shadow-[var(--shadow-modal)]"

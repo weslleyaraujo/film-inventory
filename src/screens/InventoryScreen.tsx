@@ -249,8 +249,7 @@ export function InventoryScreen() {
       {/* FAB */}
       <button
         onClick={() => (showAddSheet.value = true)}
-        class="fixed right-5 w-14 h-14 rounded-2xl bg-[var(--color-accent)] text-white shadow-lg flex items-center justify-center z-10 active:scale-95 transition-transform"
-        style="bottom: calc(68px + env(safe-area-inset-bottom, 0px))"
+        class="fixed right-5 w-14 h-14 rounded-2xl bg-[var(--color-accent)] text-white shadow-lg flex items-center justify-center z-10 active:scale-95 transition-transform bottom-[68px]"
         aria-label="Add film"
       >
         <Plus size={28} strokeWidth={2.5} />
