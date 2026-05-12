@@ -52,10 +52,7 @@ export function App() {
   return (
     <div class="flex flex-col h-dvh bg-[var(--bg-app)]">
       {/* Main content area */}
-      <main
-        class="flex-1 overflow-y-auto"
-        style="padding-top: env(safe-area-inset-top, 0px)"
-      >
+      <main class="flex-1 overflow-y-auto">
         {activeTab.value === 'inventory' && <InventoryScreen />}
         {activeTab.value === 'cameras' && <CameraListScreen />}
         {activeTab.value === 'log' && <LogScreen />}
