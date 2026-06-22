@@ -5,7 +5,7 @@ import { Button } from '../ui/Button'
 import { TypeDot } from '../ui/Badge'
 import { inventoryWithDetails } from '../../store/inventory'
 import { loadFilm } from '../../store/cameras'
-import type { FilmFormat } from '../../db/types'
+import type { FilmFormat, FilmType } from '../../db/types'
 import { confirmTap } from '../../lib/haptics'
 
 interface LoadFilmModalProps {
@@ -14,6 +14,32 @@ interface LoadFilmModalProps {
   cameraId: string
   cameraFormats: FilmFormat[]
   cameraName: string
+}
+
+/** Deduplicated entry: groups inventory items by variantId, aggregates quantities */
+interface VariantOption {
+  variantId: string
+  name: string
+  format: FilmFormat
+  stockName: string
+  stockType: FilmType
+  totalQuantity: number
+  withMeQty: number
+  fridgeQty: number
+  /** Display string for locations (e.g. "with-me" or "fridge" or "with-me, fridge") */
+  locationLabel: string
+}
+
+const FRAME_COUNTS_35MM = [24, 36]
+const FRAME_COUNTS_120 = [8, 10, 12, 16]
+const FRAME_COUNTS_220 = [16, 20, 24, 32]
+
+function defaultFrameCount(format: FilmFormat): number {
+  switch (format) {
+    case '35mm': return 36
+    case '120': return 12
+    case '220': return 24
+  }
 }
 
 const selectedVariantId = signal<string | null>(null)
@@ -39,8 +65,10 @@ export function LoadFilmModal({
   cameraFormats,
   cameraName,
 }: LoadFilmModalProps) {
-  const matchingVariants = computed(() =>
-    inventoryWithDetails.value.filter((item) => {
+  /** Deduplicated variant options sorted with-me first */
+  const matchingVariants = computed<VariantOption[]>(() => {
+    // 1. Filter raw inventory items
+    const filtered = inventoryWithDetails.value.filter((item) => {
       if (!cameraFormats.includes(item.variant.format)) return false
       if (item.quantity <= 0) return false
       if (searchQuery.value.trim()) {
@@ -50,7 +78,93 @@ export function LoadFilmModal({
       }
       return true
     })
+
+    // 2. Group by variantId, aggregate quantities
+    const grouped = new Map<string, {
+      name: string
+      format: FilmFormat
+      stockName: string
+      stockType: FilmType
+      totalQuantity: number
+      withMeQty: number
+      fridgeQty: number
+    }>()
+
+    for (const item of filtered) {
+      const vid = item.variant.id
+      const existing = grouped.get(vid)
+      if (existing) {
+        existing.totalQuantity += item.quantity
+        if (item.location === 'with-me') existing.withMeQty += item.quantity
+        else existing.fridgeQty += item.quantity
+      } else {
+        grouped.set(vid, {
+          name: item.variant.name,
+          format: item.variant.format,
+          stockName: item.variant.stock.name,
+          stockType: item.variant.stock.type,
+          totalQuantity: item.quantity,
+          withMeQty: item.location === 'with-me' ? item.quantity : 0,
+          fridgeQty: item.location === 'fridge' ? item.quantity : 0,
+        })
+      }
+    }
+
+    // 3. Sort: with-me first, then fridge-only
+    const entries = Array.from(grouped.entries()).map(([vid, data]) => {
+      const locationParts: string[] = []
+      if (data.withMeQty > 0) locationParts.push('with-me')
+      if (data.fridgeQty > 0) locationParts.push('fridge')
+      return {
+        variantId: vid,
+        name: data.name,
+        format: data.format,
+        stockName: data.stockName,
+        stockType: data.stockType,
+        totalQuantity: data.totalQuantity,
+        withMeQty: data.withMeQty,
+        fridgeQty: data.fridgeQty,
+        locationLabel: locationParts.join(', '),
+      } satisfies VariantOption
+    })
+
+    entries.sort((a, b) => {
+      const aWithMe = a.withMeQty > 0 ? 0 : 1
+      const bWithMe = b.withMeQty > 0 ? 0 : 1
+      if (aWithMe !== bWithMe) return aWithMe - bWithMe
+      // Within same group, sort by name
+      return a.name.localeCompare(b.name)
+    })
+
+    return entries
+  })
+
+  /** The selected variant option (for format-aware frame count) */
+  const selectedOption = computed<VariantOption | undefined>(() =>
+    selectedVariantId.value
+      ? matchingVariants.value.find((v) => v.variantId === selectedVariantId.value)
+      : undefined
   )
+
+  /** Frame count presets for the currently selected variant's format */
+  const frameCountPresets = computed<number[]>(() => {
+    const fmt = selectedOption.value?.format
+    if (fmt === '120') return FRAME_COUNTS_120
+    if (fmt === '220') return FRAME_COUNTS_220
+    return FRAME_COUNTS_35MM
+  })
+
+  const selectVariant = (variantId: string) => {
+    const prev = selectedVariantId.value
+    selectedVariantId.value = variantId
+    // Reset frame count to default when switching to a different-format variant
+    if (variantId !== prev) {
+      const opt = matchingVariants.value.find((v) => v.variantId === variantId)
+      if (opt) {
+        frameCount.value = defaultFrameCount(opt.format)
+      }
+    }
+  }
 
   const handleSubmit = async () => {
     if (!selectedVariantId.value || !cameraId) return
@@ -103,25 +217,38 @@ export function LoadFilmModal({
               No matching films in inventory
             </p>
           ) : (
-            matchingVariants.value.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => (selectedVariantId.value = item.variant.id)}
-                class={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-colors text-left
-                  ${selectedVariantId.value === item.variant.id
-                    ? 'border-[var(--color-accent)] bg-[var(--color-accent-muted)]'
-                    : 'border-[var(--color-border)] bg-[var(--bg-card)] hover:bg-[var(--bg-app)]'
-                  }`}
-              >
-                <TypeDot type={item.variant.stock.type} />
-                <div class="flex-1 min-w-0">
-                  <p class="text-body truncate">{item.variant.name}</p>
-                  <p class="text-caption text-[var(--text-secondary)]">
-                    {item.variant.stock.name} · {item.variant.format} · {item.quantity} rolls ({item.location})
-                  </p>
-                </div>
-              </button>
-            ))
+            (() => {
+              const rows: any[] = []
+              let shownFridgeHeader = false
+              for (const opt of matchingVariants.value) {
+                if (opt.withMeQty === 0 && !shownFridgeHeader) {
+                  shownFridgeHeader = true
+                  rows.push(
+                    <p key="stored-header" class="text-brand text-[var(--text-tertiary)] px-4 pt-3 pb-1">Stored</p>
+                  )
+                }
+                rows.push(
+                  <button
+                    key={opt.variantId}
+                    onClick={() => selectVariant(opt.variantId)}
+                    class={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-colors text-left
+                      ${selectedVariantId.value === opt.variantId
+                        ? 'border-[var(--color-accent)] bg-[var(--color-accent-muted)]'
+                        : 'border-[var(--color-border)] bg-[var(--bg-card)] hover:bg-[var(--bg-app)]'
+                      }`}
+                  >
+                    <TypeDot type={opt.stockType} />
+                    <div class="flex-1 min-w-0">
+                      <p class="text-body truncate">{opt.name}</p>
+                      <p class="text-caption text-[var(--text-secondary)]">
+                        {opt.stockName} · {opt.format} · {opt.totalQuantity} {opt.totalQuantity === 1 ? 'roll' : 'rolls'} ({opt.locationLabel})
+                      </p>
+                    </div>
+                  </button>
+                )
+              }
+              return rows
+            })()
           )}
         </div>
 
@@ -130,8 +257,8 @@ export function LoadFilmModal({
             {/* Frame count */}
             <div class="flex flex-col gap-1.5">
               <label class="text-caption text-[var(--text-secondary)]">Frame count</label>
-              <div class="flex gap-2">
-                {[24, 36].map((n) => (
+              <div class="flex gap-2 flex-wrap">
+                {frameCountPresets.value.map((n) => (
                   <button
                     key={n}
                     onClick={() => (frameCount.value = n)}
