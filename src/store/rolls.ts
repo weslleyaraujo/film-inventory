@@ -84,6 +84,97 @@ export const mostUsedCamera = computed<{ name: string; count: number } | null>((
   return max.count > 0 ? max : null
 })
 
+// ── Stats / Breakdowns ──
+
+/** Total frames captured across all finished rolls */
+export const totalFrames = computed<number>(() =>
+  finishedRollsWithDetails.value.reduce((sum, r) => sum + (r.frameCount ?? 0), 0)
+)
+
+/** Breakdown by film type */
+export const breakdownByType = computed<{ type: string; count: number }[]>(() => {
+  const map = new Map<string, number>()
+  for (const roll of finishedRollsWithDetails.value) {
+    const t = roll.variant.stock.type
+    map.set(t, (map.get(t) ?? 0) + 1)
+  }
+  return Array.from(map.entries())
+    .map(([type, count]) => ({ type, count }))
+    .sort((a, b) => b.count - a.count)
+})
+
+/** Breakdown by format */
+export const breakdownByFormat = computed<{ format: string; count: number }[]>(() => {
+  const map = new Map<string, number>()
+  for (const roll of finishedRollsWithDetails.value) {
+    const f = roll.variant.format
+    map.set(f, (map.get(f) ?? 0) + 1)
+  }
+  return Array.from(map.entries())
+    .map(([format, count]) => ({ format, count }))
+    .sort((a, b) => b.count - a.count)
+})
+
+/** Breakdown by brand */
+export const breakdownByBrand = computed<{ brand: string; count: number }[]>(() => {
+  const map = new Map<string, number>()
+  for (const roll of finishedRollsWithDetails.value) {
+    const b = roll.variant.stock.brand
+    map.set(b, (map.get(b) ?? 0) + 1)
+  }
+  return Array.from(map.entries())
+    .map(([brand, count]) => ({ brand, count }))
+    .sort((a, b) => b.count - a.count)
+})
+
+/** Breakdown by ISO */
+export const breakdownByISO = computed<{ iso: number; count: number }[]>(() => {
+  const map = new Map<number, number>()
+  for (const roll of finishedRollsWithDetails.value) {
+    const iso = roll.variant.stock.iso
+    map.set(iso, (map.get(iso) ?? 0) + 1)
+  }
+  return Array.from(map.entries())
+    .map(([iso, count]) => ({ iso, count }))
+    .sort((a, b) => a.iso - b.iso)
+})
+
+/** Top 5 most-shot stocks */
+export const topStocks = computed<{ name: string; brand: string; count: number }[]>(() => {
+  const map = new Map<string, { name: string; brand: string; count: number }>()
+  for (const roll of finishedRollsWithDetails.value) {
+    const s = roll.variant.stock
+    const entry = map.get(s.id) ?? { name: s.name, brand: s.brand, count: 0 }
+    entry.count++
+    map.set(s.id, entry)
+  }
+  return Array.from(map.values())
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5)
+})
+
+/** Rolls per month for the last 12 months (includes months with 0) */
+export const rollsByMonthLast12 = computed<{ month: string; count: number }[]>(() => {
+  const now = new Date()
+  const countByKey = new Map<string, number>()
+  for (const roll of finishedRollsWithDetails.value) {
+    const key = roll.finishedAt.toISOString().slice(0, 7)
+    countByKey.set(key, (countByKey.get(key) ?? 0) + 1)
+  }
+  const months: { yyyymm: string; label: string }[] = []
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+    months.push({
+      yyyymm: d.toISOString().slice(0, 7),
+      label: d.toLocaleString('en-US', { month: 'short', year: '2-digit' }),
+    })
+  }
+  return months.map((m) => ({
+    month: m.label,
+    count: countByKey.get(m.yyyymm) ?? 0,
+  }))
+})
+
 // ── Actions ──
 
 export async function deleteFinishedRoll(id: string): Promise<void> {

@@ -1,8 +1,12 @@
-import { ClipboardList, Trash2, Hash } from 'lucide-preact'
+import { signal } from '@preact/signals'
+import { ClipboardList, Trash2, Hash, BarChart3 } from 'lucide-preact'
 import { finishedRollsWithDetails, totalFinishedRolls, mostShotStock, mostUsedCamera, deleteFinishedRoll, updateFinishedRoll } from '../store/rolls'
 import { TypeDot } from '../components/ui/Badge'
 import { EmptyState } from '../components/ui/EmptyState'
+import { LogStatsModal } from './LogStatsModal'
 import { formatDate, formatMonth } from '../lib/date'
+
+const showLogStats = signal(false)
 
 export function LogScreen() {
   const rolls = finishedRollsWithDetails.value
@@ -24,8 +28,17 @@ export function LogScreen() {
 
   return (
     <div class="flex flex-col min-h-full">
-      <header class="px-5 pt-[calc(16px+var(--safe-top))] pb-4">
+      <header class="px-5 pt-[calc(16px+var(--safe-top))] pb-4 flex items-center justify-between">
         <h1 class="text-screen-title">Log</h1>
+        {totalFinishedRolls.value > 0 && (
+          <button
+            onClick={() => (showLogStats.value = true)}
+            class="p-2 -mr-2 rounded-xl text-[var(--text-tertiary)] hover:bg-[var(--bg-card)]"
+            aria-label="Shooting stats"
+          >
+            <BarChart3 size={20} strokeWidth={1.5} />
+          </button>
+        )}
       </header>
 
       {rolls.length > 0 && (
@@ -133,6 +146,8 @@ export function LogScreen() {
           })
         )}
       </section>
+
+      <LogStatsModal open={showLogStats.value} onClose={() => (showLogStats.value = false)} />
     </div>
   )
 }

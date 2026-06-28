@@ -17,13 +17,7 @@ export function formatMonth(date: Date | string): string {
 
 export function formatRelative(date: Date | string): string {
   const d = new Date(date)
-  const now = Date.now()
-  const diffMs = d.getTime() - now
-  const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24))
-
-  if (diffDays === 0) return 'today'
-  if (diffDays === -1) return 'yesterday'
-  if (diffDays === 1) return 'tomorrow'
+  const diffDays = Math.round((d.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
   if (Math.abs(diffDays) < 30) return relFormat.format(diffDays, 'day')
   return dateFormat.format(d)
 }
